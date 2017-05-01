@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
+<!-- above set at the top of the file will set     -->
+<!-- the browser's rendering engine into           -->
+<!-- "Quirks Mode". Replacing this declaration     -->
+<!-- with a "Standards Mode" doctype is supported, -->
+<!-- but may lead to some differences in layout.   -->
+
+<html>
+  <head>
+    <title>Welcome to SimpleSurvey!</title>
+  </head>
+  <body>
+  <h2> Welcome to SimpleSurvey!</h2>
+  <h4> Please fill in all fields, age and press "Send vote" button to continue.</h4>
+    <form action="/result" method="POST">
+        <table width="100%" cellspacing="0" cellpadding="4">
+            <tr><td align="right" width="100">First name:</td>
+                <td><input type="text" name="firstname" maxlength="50" size="20"></td></tr>
+        <tr><td align="right" width="100">Last name:</td>
+            <td><input type="text" name="lastname" maxlength="50" size="20"></td></tr>
+        <tr><td align="right" width="100">Age:</td>
+            <td><input type="text" name="age" maxlength="50" size="20"></td></tr>
+        </table>
+        <p>Do you like prog.kiev.ua courses?</p>
+        <input type="radio" checked name="like" value="yes"> Yes <br>
+            <input type="radio" name="like" value="no"> No <br>
+        <p>Will you recommend them to your friends?</p>
+        <p><input type="radio" checked name="recommend" value="yes"> Yes <br>
+            <input type="radio" name="recommend" value="no"> No <br></p>
+
+        <input type="submit" value="Send vote">
+    </form>
+  </body>
+</html>
