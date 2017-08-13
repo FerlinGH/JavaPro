@@ -1,8 +1,11 @@
 package ua.kiev.prog.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,6 +29,7 @@ import ua.kiev.prog.exception.PhotoNotFoundException;
 public class MyController {
 
 	private Map<Long, byte[]> photos = new HashMap<Long, byte[]>();
+	private String[] selectedId;
 
 	@RequestMapping("/")
 	public String showIndex() {
@@ -59,29 +63,60 @@ public class MyController {
 		return "container";
 	}
 
-	@PostMapping("/deleteSelected")
-	public String deleteSelected(HttpServletRequest request) {
-		String[] selected = request.getParameterValues("id");
-		for (String stringId : selected) {
-			photos.remove(Long.valueOf(stringId));
-			System.out.println("Image removed: " + stringId);
+	@PostMapping("/processSelected")
+	public String processSelected(HttpServletRequest request) throws IOException {
+		selectedId = request.getParameterValues("id");
+		String action = request.getParameter("action");
+		if (action.equals("delete")) {
+			for (String stringId : selectedId) {
+				photos.remove(Long.valueOf(stringId));
+				System.out.println("Image removed: " + stringId);
+			}
+			selectedId = null;
+			return "redirect:/";
+		} else {
+			return "redirect:/zip";
+
 		}
-		return "redirect:/";
+	}
+
+	@GetMapping(name = "/zip", produces = "application/zip")
+	public ResponseEntity<byte[]> createZip() throws IOException {
+		byte[] output = null;
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
+				ZipOutputStream zos = new ZipOutputStream(bos)) {
+			zos.setMethod(ZipOutputStream.DEFLATED);
+			zos.setLevel(3);
+			for (String id : selectedId) {
+				ZipEntry zipEntry = new ZipEntry(id + ".jpeg");
+				byte[] tempArray = photos.get(Long.valueOf(id));
+				zipEntry.setSize(tempArray.length);
+				zos.putNextEntry(zipEntry);
+				zos.write(tempArray);
+				zos.closeEntry();
+			}
+			zos.close();
+			output = bos.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		selectedId = null;
+		return ResponseEntity.ok().contentLength(output.length).body(output);
 
 	}
 
-	@GetMapping("/show/{photo_id}")
-	public ResponseEntity<byte[]> onPhoto(@PathVariable("photo_id") long id) {
+	@GetMapping("/show/{photoId}")
+	public ResponseEntity<byte[]> onPhoto(@PathVariable("photoId") long id) {
 		return photoById(id);
 	}
 
 	@PostMapping("/view")
-	public ResponseEntity<byte[]> onView(@RequestParam("photo_id") long id) {
+	public ResponseEntity<byte[]> onView(@RequestParam("photoId") long id) {
 		return photoById(id);
 	}
 
-	@GetMapping("/delete/{photo_id}")
-	public String onDelete(@PathVariable("photo_id") long id) {
+	@GetMapping("/delete/{photoId}")
+	public String onDelete(@PathVariable("photoId") long id) {
 		if (photos.remove(id) == null)
 			throw new PhotoNotFoundException();
 		else
