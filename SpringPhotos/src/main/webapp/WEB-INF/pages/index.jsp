@@ -13,7 +13,7 @@
 
 		<form action="view" method="POST">
 			<h2>Storage operations:</h2>
-			Image ID: <input type="text" name="photo_id"> <input
+			Image ID: <input type="text" name="photoId"> <input
 				type="submit" value="Search by ID" /> <input type="button"
 				value="Show All"
 				onclick="window.location.href='showAll'; return false;" />

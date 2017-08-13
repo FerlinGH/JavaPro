@@ -11,7 +11,7 @@
 <body>
 	<c:choose>
 		<c:when test="${!photos.isEmpty() }">
-			<form name="input" action="deleteSelected" method="POST">
+			<form name="input" action="processSelected" method="POST">
 				<table>
 					<tr>
 						<th></th>
@@ -34,7 +34,9 @@
 						</tr>
 					</c:forEach>
 				</table>
-				<input type="submit" value="Delete selected images">
+				<input type="radio" name="action" checked="checked" value="delete" />Delete
+				selected <input type="radio" name="action" value="archive" />Archive
+				selected <input type="submit" value="Send request">
 			</form>
 		</c:when>
 		<c:otherwise>
